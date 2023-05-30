@@ -1,0 +1,113 @@
+#include <iostream>   // Entregan el cin y cout para leer y escribir datos
+#include <algorithm>  // Contiene la función sort() que se utiliza en orden de los participantes
+#include <sstream>    // Biblioteca para realizar operaciones de flujos
+#include <vector>     // Para crear vectores en C++
+
+struct board // Estructura para almacenar los datos de cada participante.
+{
+  int contestant;    // gjkkjNúmero del concursante
+  int nproblem;      // Número de problemas resueltos
+  int problem[10];   // Estado de los problemas
+  int penalty[10];   // Penalizaciones para cada problema
+  int time;          // Tiempo total 
+  // Constructor de la estructura
+  board(int c) : contestant(c), nproblem(0)
+  {
+    time = 0; // iniciar el tiempo en 0s
+    for (int i = 0; i < 10; ++i) //Dejarlos los estados y la penalizacion en 0 en todos sus numeros.
+    {
+      problem[i] = 0;
+      penalty[i] = 0;
+    }
+  }
+
+  // Funcion para calcular el tiempo que se demora los participantes, es un tiempo acumulado.
+  void calc_time()
+  {
+    //(0 = no resuelto, 1 = resuelto)
+    for (int i = 1; i < 10; ++i)
+    {
+      if (problem[i] == 1) // Si resulta
+        time += penalty[i]; // se suma el tiempo de penalizacion
+    }
+  }
+};
+
+// Función para inicializar, se utiliza para que al compilador lea el código de la función en línea en lugar de llamarlo como una función separada.
+inline void init(int index[])
+{ for (int i = 0; i < 101; ++i)
+    index[i] = -1;}
+
+// Esta funcion hace la funcion del jurado la cual evalua los resultados.
+void judge(board &b, const int &problem, const int &time, const char &L)
+{
+  if (b.problem[problem] == 1) // Como es == 1 esta resulto el problema por lo tanto no hace nada y manda a un return.
+  { return; }
+  if (L == 'C') // Si la respuesta es correcta (C).
+  {++b.nproblem; // Incrementar el número de problemas resueltos por el participante.
+    b.problem[problem] = 1; // Marcar el problema como resuelto.
+    b.penalty[problem] += time; } // Sumar el tiempo a la penalizacion.
+  else if (L == 'I') // Si la respuesta es incorrecta (I).
+  { b.penalty[problem] += 20; }// Agregar la penalización de 20 al problema.
+}
+
+// Cumple la funcion del operador la cual ordena los participantes según las reglas del problema.
+bool operator<(const board &b1, const board &b2)
+{
+  if (b1.nproblem > b2.nproblem) // Ordenar por número de problemas resueltos.
+    return true; // Ordena de mayor a menor
+  if (b1.nproblem == b2.nproblem && b1.time < b2.time) // Si tienen el mismo número de problemas resueltos.
+    return true; // Ordenar por tiempo de menor a mayor
+  if (b1.nproblem == b2.nproblem && b1.time == b2.time && b1.contestant < b2.contestant) // Si tienen el mismo N° problemas resueltos y el mismo tiempo.
+    return true;
+  return false;//  ordenar por número de concursante de menor a mayor.
+}
+
+int main() // funcion principal
+{
+  int T;            // T es el N° de pruebas
+  std::string s;    // string para almacenar la entrada.
+  int contestant, problem, time;
+  char L;
+
+  std::cin >> T; // Leer el T
+  getline(std::cin, s); // se utliza un getline para Leer las línea vacía después del T.
+  getline(std::cin, s); 
+
+  for (int t = 1; t <= T; ++t) // Recoore todos las pruebas
+  {
+    int index[101]; // Arreglo para almacenar el índice de cada concursante.
+    std::fill(index, index + 101, -1); // Inicializar el arreglo con -1, Ya que asi esta estipulado en la funcion inline void init(int index[]) de arriba
+    std::vector<board> v; // Guarda los datos de los particpantes en un vector
+    while (getline(std::cin, s)) // Leer cada  los datos dentro del while
+    {
+      if (s == "") // Si se encuentra una línea vacía
+        break; // Terminar de leer los datos del caso de prueba actual.
+
+      std::istringstream iss(s); // Crear un flujo de entrada para leer los datos.
+      iss >> contestant >> problem >> time >> L; // Datos del concursante, problema, tiempo y respuesta.
+
+      if (index[contestant] == -1) // Si no se ecuentra al concursante en el arreglo index
+      {
+        v.push_back(*new board(contestant)); // Agregara al concursante al vector.
+        index[contestant] = (int)v.size() - 1;
+      }
+
+      judge(v[index[contestant]], problem, time, L); // Pasa los datos por el juez que fue creado en la funcion, y entrega los datos ya evaluados.
+    }
+    for (std::vector<board>::iterator it = v.begin(); it != v.end(); ++it) // Tiempo total para cada participante.
+      it->calc_time();
+
+    // Ordenar los participantes con un sort
+    sort(v.begin(), v.end());
+
+    // Imprimir los resultados de los participantes
+    for (std::vector<board>::iterator it = v.begin(); it != v.end(); ++it)
+      std::cout << it->contestant << ' ' << it->nproblem << ' ' << it->time << std::endl;
+
+    // Imprimir una línea vacía al final de cada caso de prueba
+    if (t < T)
+      std::cout << std::endl;
+  }
+  return 0;
+}
