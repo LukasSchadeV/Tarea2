@@ -1,0 +1,29 @@
+#include <iostream>
+#include <list>    // Sirve para crear Listas en C++
+using namespace std;
+
+int main() {
+    string input; // Almacenar cada línea de entrada
+
+    while (getline(cin, input)) { // La función getline lee caracteres de la entrada hasta que encuentra un carácter '\n' .
+        list<char> output; // Ir guardando el resultado dentro de una Lista.
+        auto iterador = output.begin(); // Crear un iterador que mantener un puntero de inserción.
+
+        for (char c : input) { // Crea un for el cual recorre cada carácter de la cadena de entrada.
+            if (c == '[') { // Si c encuentra un [
+                iterador = output.begin(); // Mover el iterador al principio de la lista.
+            } else if (c == ']') { // Si c encuentra un ]
+                iterador = output.end(); // Mover el iterador al final de la lista.
+            } else { // Cualquier otro simbolo
+                iterador = output.insert(iterador, c); // Insertar el carácter en la posición actual del iterador.
+                ++iterador; // Avanzar el iterador a la siguiente posición.
+            }
+        }
+        // Imprimir el resultado
+        for (char c : output) {
+            cout << c;
+        }
+        cout << endl;
+    }
+    return 0;
+}
