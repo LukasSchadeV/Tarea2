@@ -1,0 +1,48 @@
+#include <iostream> //Entregan el cin y cout para leer y escribir datos
+#include <stack>    // implementación de la estructura de datos de pila.
+using namespace std;
+
+int main() {
+	int n, target[1000];
+	int i;
+
+	while (true) {
+		cin >> n; // Número de vagones
+		if (n == 0) // Si el número de vagones es cero, se termina el programa
+
+			break;
+
+		while (true) {
+			cin >> target[0];// Primer valor
+            
+			if (target[0] == 0){
+				cout << endl;  // línea en vacia para separar los casos de prueba
+				break;  // Si el primer objetivo es cero, se termina el bucle
+			}
+			for (i = 1; i < n; i++) {
+				cin >> target[i];  // Lee los objetivos siguientes en caso de que sea mayor a 1
+
+			}
+
+			int currCoach = 1, targetIndex = 0;
+			stack<int> station;  // Crea una pila que simula la estación de tren
+
+			while(currCoach<=n){		  // Organiza los vagones en la estación según el objetivo
+				station.push(currCoach);  // Coloca el vagón actual en la estación
+
+				while(!station.empty() && station.top() == target[targetIndex]){ // Se comprueba si se puede sacar un vagón de la estación según el objetivo actual 
+					station.pop();  // Si el vagón en la cima de la estación coincide con el objetivo, se saca de la estación
+					targetIndex++;  // Se avanza al siguiente objetivo
+					if(targetIndex>=n) break;  // Si se alcanza el último objetivo,Se termina el bucle
+				}
+
+				currCoach++;  // Siguiente vagón
+			}
+
+			if(station.empty()) cout << "Yes" << endl;  // Si la estación está vacía al final, se puede formar la secuencia
+			else cout << "No" << endl;  // Si la estación no está vacía, no se puede formar la secuencia ya que no estan en el  orden deseado
+		}
+	}
+
+	return 0;
+}
