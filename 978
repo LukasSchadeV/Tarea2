@@ -1,0 +1,104 @@
+#include <bits/stdc++.h>  // Biblioteca que incluye un conjunto de otras bibliotecas estándar de C++
+
+using namespace std;
+
+typedef queue<int> qi;  // Define queue<int> en qi como una cola de enteros
+typedef multiset<int, greater<int> > msi;  // Define  msi un multiconjunto o multiset
+typedef multiset<int, greater<int> >::iterator msii;  // Define iterator msii el iterador para los multiconjuntos
+
+int main(void) {
+	ios_base::sync_with_stdio(0);  // Entrada y salida de datos
+	cin.tie(0);
+
+	int testCases;
+	cin >> testCases;  // Lee el número de casos de prueba
+
+	while(testCases--) {
+		int blue;
+		int green;
+		int battlefield;
+		msi bluePower;  // Multiconjunto de poder de los soldados azules
+		msi greenPower;  // Multiconjunto de poder de los soldados verdes
+
+		cin >> battlefield >> green >> blue;  // Lee el tamaño del campo de batalla, la cantidad de soldados verdes y la cantidad de soldados azules
+
+		for(int i = 0; i < green; ++i) {// Guarda el poder de los soldados verdes y los inserta en el multiconjunto
+			int power;
+			cin >> power;
+			greenPower.insert(power);
+		}
+
+		for(int i = 0; i < blue; ++i) { // Guarda los soldados azules 
+			int power;
+			cin >> power;
+			bluePower.insert(power);
+		}
+
+		// Realiza la batalla hasta que alguno de los multiconjuntos esté vacío
+		while(!bluePower.empty() && !greenPower.empty()) {
+			qi blueFighters;  // Cola de soldados azules para la batalla actual
+			qi greenFighters;  // Cola de soldados verdes para la batalla actual
+			int minSize = min(battlefield, (int)min(bluePower.size(), greenPower.size()));  // Obtiene el tamaño mínimo entre el campo de batalla y la cantidad de soldados disponibles
+
+			// Prepara a los soldados para la batalla, sacándolos del multiconjunto y poniéndolos en las colas
+			for(int i = 0; i < minSize; ++i) {
+				msii b = bluePower.begin();  // Obtiene el soldado azul con mayor poder
+				msii g = greenPower.begin();  // Obtiene el soldado verde con mayor poder
+
+				blueFighters.push(*b);
+				greenFighters.push(*g);
+
+				bluePower.erase(b);  // Elimina al soldado azul del multiconjunto
+				greenPower.erase(g);  // Elimina al soldado verde del multiconjunto
+			}
+
+			// Realiza la batalla entre los soldados de las colas y actualiza el multiconjunto según los resultados
+			for(int i = 0; i < minSize; ++i) {
+				int b = blueFighters.front();  // Obtiene el soldado azul de la cola
+				int g = greenFighters.front();  // Obtiene el soldado verde de la cola
+
+				blueFighters.pop();  // Remueve al soldado azul de la cola
+				greenFighters.pop();  // Remueve al soldado verde de la cola
+
+				if(b == g)
+					continue;  // Si los soldados tienen el mismo poder, no hay cambios en el multiconjunto
+				if(b < g) // Si el soldado verde tiene más poder,
+					greenPower.insert(g - b);  //Agrega la diferencia al multiconjunto verde
+				else // Si el soldado azul tiene más poder
+					bluePower.insert(b - g);  // Agrega la diferencia al multiconjunto azul
+			}
+		}
+        msii begin;// Variable para almacenar un iterador
+        msii end;
+
+        // Verifica si ambos multiconjuntos están vacíos, lo que significa que todos los soldados murieron
+        if(bluePower.empty() && greenPower.empty()) {
+	        cout << "green and blue died\n";  // Imprime que tanto los soldados verdes como los azules murieron
+	    if(testCases)
+		    cout << "\n";  // Imprime una línea en blanco si hay más casos de prueba por procesar
+	    continue;  // Salta a la siguiente iteración del bucle while
+    }
+
+        if(bluePower.empty()) {
+	        cout << "green wins\n";  // Imprime que los soldados verdes ganaron
+
+	        end = greenPower.end();  // Asigna el iterador al final del multiconjunto verde
+	        begin = greenPower.begin();  // Asigna el iterador al principio del multiconjunto verde
+        }
+        else {
+	        cout << "blue wins\n";  // Imprime que los soldados azules ganaron
+
+	        end = bluePower.end();  // Asigna el iterador al final del multiconjunto azul
+	        begin = bluePower.begin();  // Asigna el iterador al principio del multiconjunto azul
+        }
+
+        // Imprime el poder restante de los soldados ganadores
+        for(msii i = begin; i != end; ++i)
+	        cout << *i << "\n";  // Imprime el valor actual del iterador (el poder del soldado)
+        if(testCases)
+	        cout << "\n";  // Imprime una línea en blanco si hay más casos de prueba por procesar
+
+	}
+
+	return 0;
+}
