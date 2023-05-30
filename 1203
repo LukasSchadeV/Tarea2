@@ -1,0 +1,36 @@
+#include <cstdio> // Esta biblioteca proporciona funciones para manipular la entrada y salida estándar, utilizando scanf y printf
+#include <queue> //Implementa la estructura de datos de cola (queue). que almacena los elementos en orden (primero en entrar, primero en salir)
+#include <utility> // Sirve para trabajar con pares y otras estructuras de datos útiles
+#include <cstring> // trabaja con cadenas de caracteres para poder compararlas (strcmp)
+#include <iostream> // Entregan el cin y cout para leer y escribir datos
+#include <functional> //Se utiliza en el código para el comparador greater en la cola de prioridad, que ordena los elementos en orden ascendente.
+using namespace std;
+
+// Resultado de Ackoroa. https://github.com/ackoroa/UVa-Solutions/blob/master/UVa%201203%20-%20Argus/src/UVa%201203%20-%20Argus.cpp
+
+int main() {
+	char s[20];
+	int qnum, p, n;
+	
+	// Se crea una cola en pq que almacena los pares
+	// La cola se ordena en orden ascendente.
+	priority_queue<pair<int, pair<int, int> >, 	//(tiempo de próxima ejecución, (número de consulta, período))
+			vector<pair<int, pair<int, int> > >,
+			greater<pair<int, pair<int, int> > > > pq;
+
+	while (scanf("%s", s), strcmp("#", s)) { 	// Se lee una cadena de caracteres hasta que se encuentra "#"
+		scanf("%d %d", &qnum, &p); 		// Se lee el número qnum y el período p
+		pq.push(pair<int, pair<int, int> >(p, pair<int, int>(qnum, p))); // Se crea un par con el formato (p, (qnum, p)) y se inserta en la cola de prioridad
+	}
+	scanf("%d", &n);	// Se lee el número de consultas a mostrar
+	
+	while (n--) { // Se ejecuta un bucle n veces
+		pair<int, pair<int, int> > pr = pq.top(); // Se obtiene el par de mayor prioridad de la cola de prioridad
+		pq.pop(); 		                 // Se elimina el par de mayor prioridad de la cola de prioridad
+		printf("%d\n", pr.second.first); //  se imprime el número de consulta
+		pr.first += pr.second.second;	 // Se actualiza el tiempo de próxima ejecución sumándole el período correspondiente
+		pq.push(pr); 		             // Se inserta el par actualizado en la cola de prioridad
+	}
+
+	return 0;
+}
