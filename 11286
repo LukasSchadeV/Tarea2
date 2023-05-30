@@ -1,0 +1,54 @@
+#include <iostream>     // Entregan el cin y cout para leer y escribir datos
+#include <map>          // Biblioteca para utilizar un mapa (asociación clave-valor)
+#include <vector>       // Sirve para los vectores
+#include <algorithm>    // Agrega el sort para ordenar
+
+using namespace std;
+
+int main(){
+	
+	int n;
+
+	while(cin>>n and n){
+		int maximo=0;
+
+		map <vector<int>, int> frosh;// crear el mapa para almacenar las combinaciones de cursos y frecuencia
+
+		vector <int> arr(5); // Se declara un vector para almacenar los cursos seleccionados con un maximo de 5 cursos
+
+		for (int i = 0; i < n; i++){
+			for (int j = 0; j < 5 ; j++){
+				cin>>arr[j]; // Leer los datos
+			}
+			sort(arr.begin(), arr.end()); // ordenar los estudiantes en orden ascedente usando un ordenamiento tipo sort
+
+			if(frosh.count(arr)==1){ // Verificar si la combinación de cursos ya existe en el mapa
+				frosh[arr]++; // Si existe, se incrementa el contador
+			}
+			else{
+				frosh[arr]=1; // en caso contrario, se agrega la combinación al mapa con un 1
+			}
+		}
+
+		map<vector<int>, int>::iterator i;
+
+		for (i = frosh.begin(); i != frosh.end(); ++i){
+			if((i->second)>maximo)
+				maximo= i->second; // obtener máximo de estudiantes del cursos
+		}
+
+		int cont=0;
+
+		for (i = frosh.begin(); i != frosh.end(); ++i){
+			if((i->second)==maximo)
+				cont++; // Cuenta el número de combinaciones que tienen el máximo número de estudiantes
+		}
+
+		maximo= maximo*cont; // Se calcula el número total de estudiantes
+		cout<<maximo<<'\n';  // Imprime el resultado
+		frosh.clear();       // Vaciar el mapa, por si todavia quedan iteraciones por complir dentro del while
+
+	}
+
+	return 0;
+}
